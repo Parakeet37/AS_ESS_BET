@@ -5,34 +5,27 @@
  */
 package essbet;
 
-/**
- *
- * @author Sephthia Winter
- */
+import java.util.ArrayList;
+
 public class Evento {
     
-    String homeTeam;
-    String awayTeam;
-    double homeOdd;
-    double awayOdd;
-    Estado state;
-
-    public String getHomeTeam() {
-        return homeTeam;
+    private int id;
+    private double homeOdd;
+    private double awayOdd;
+    private Estado state;
+    private String equipaCasa;
+    private String equipaFora;
+    private double oddEmpate;
+    private int resultadoCasa;
+    private int resultadoFora;
+    private ArrayList<Aposta> apostas;
+    
+    public Evento(){}
+    
+    public int getID() {
+    	return id;
     }
-
-    public void setHomeTeam(String homeTeam) {
-        this.homeTeam = homeTeam;
-    }
-
-    public String getAwayTeam() {
-        return awayTeam;
-    }
-
-    public void setAwayTeam(String awayTeam) {
-        this.awayTeam = awayTeam;
-    }
-
+    
     public double getHomeOdd() {
         return homeOdd;
     }
@@ -40,7 +33,7 @@ public class Evento {
     public void setHomeOdd(double homeOdd) {
         this.homeOdd = homeOdd;
     }
-
+    
     public double getAwayOdd() {
         return awayOdd;
     }
@@ -49,20 +42,91 @@ public class Evento {
         this.awayOdd = awayOdd;
     }
 
-    public Estado getState() {
+    public Estado getEstado() {
         return state;
     }
 
-    public void setState(Estado state) {
-        this.state = state;
+    public void setEstado(Estado e) {
+        this.state = e;
     }
 
-    public Evento(String homeTeam, String awayTeam, double homeOdd, double awayOdd, Estado state) {
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
+    public String getEquipaCasa() {
+        return equipaCasa;
+    }
+
+    public String getEquipaFora() {
+        return equipaFora;
+    }
+    
+    public double getOddEmpate() {
+        return oddEmpate;
+    }
+
+    public void setOddEmpate(double oddEmpate) {
+        this.oddEmpate = oddEmpate;
+    }
+    
+    public int getresultadoCasa() {
+    	return resultadoCasa;
+    }
+    
+    public int getresultadoFora() {
+    	return resultadoFora;
+    }
+
+    public void invalidadoCasa() {
+        if (resultadoCasa>0)resultadoCasa--;
+    }
+
+    public void goloCasa() {
+        resultadoCasa++;
+    }
+
+    public void invalidadoFora() {
+        if (resultadoFora>0)resultadoFora--;
+    }
+
+    public void goloFora() {
+        resultadoFora++;
+    }
+    
+    public void setResultadoCasa(int i) {
+    	resultadoCasa = i;
+    }
+    
+    public void setResultadoFora(int i) {
+    	resultadoFora = i;
+    }
+    public Evento(double homeOdd, double awayOdd, double oddEmpate, String equipaCasa, String equipaFora) {
         this.homeOdd = homeOdd;
         this.awayOdd = awayOdd;
-        this.state = state;
+        this.state = Estado.aberto;
+        this.equipaCasa = equipaCasa;
+        this.equipaFora = equipaFora;
+        this.oddEmpate = oddEmpate;
+        this.resultadoCasa = 0;
+        this.resultadoFora = 0;
+        this.apostas = new ArrayList<Aposta>();
+        this.id = 0;
+    }
+
+	@Override
+	public String toString() {
+		return "Evento [id=" + id + ", homeOdd=" + homeOdd + ", awayOdd=" + awayOdd + ", state=" + state
+				+ ", equipaCasa=" + equipaCasa + ", equipaFora=" + equipaFora + ", oddEmpate=" + oddEmpate
+				+ ", resultadoCasa=" + resultadoCasa + ", resultadoFora=" + resultadoFora + "]";
+	}
+
+	public ArrayList<Aposta> getApostas() {
+		return apostas;
+	}
+
+	public void adicionarAposta(Aposta a) {
+		apostas.add(a);
+	}
+    
+    public void setID(int i) {
+    	this.id = i;
     }
  
 }

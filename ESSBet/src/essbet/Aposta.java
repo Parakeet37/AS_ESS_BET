@@ -11,48 +11,44 @@ package essbet;
  */
 public class Aposta {
     
-       Cliente better;
-    Evento event;
-    char teamToBet;         //x -> empate; 1 -> casa; 2 -> fora
-    double valueToBet;
+    private int id;
+    private String idApostador;
+    private int idEvento;
+    private char equipaAapostar;
+    private double valorAapostar;
 
-    public Aposta(Cliente better, Evento event, char teamToBet, double valueToBet) {
-        this.better = better;
-        this.event = event;
-        this.teamToBet = teamToBet;
-        this.valueToBet = valueToBet;
+    public Aposta() {}
+    
+    
+    public Aposta(String idApostador, int idEvento, char equipaAapostar, double valorAapostar) {
+        this.idApostador = idApostador;
+        this.idEvento = idEvento;
+        this.equipaAapostar = equipaAapostar;
+        this.valorAapostar = valorAapostar;
+        this.id = 0;
     }
 
-    public Cliente getBetter() {
-        return better;
+    public String getidApostador() {
+        return idApostador;
     }
 
-    public void setBetter(Cliente better) {
-        this.better = better;
-    }
-
-    public Evento getEvent() {
-        return event;
-    }
-
-    public void setEvent(Evento event) {
-        this.event = event;
-    }
-
-    public char getTeamToBet() {
-        return teamToBet;
-    }
-
-    public void setTeamToBet(char teamToBet) {
-        this.teamToBet = teamToBet;
-    }
-
-    public double getValueToBet() {
-        return valueToBet;
-    }
-
-    public void setValueToBet(double valueToBet) {
-        this.valueToBet = valueToBet;
+    public void setidEvento(int id) {
+        this.idEvento = id;
     }
     
+    public void setidApostador(String idApostador) {
+        this.idApostador = idApostador;
+    }
+
+    public int getidEvento() {
+        return idEvento;
+    }
+
+    public char getEquipaAapostar() {
+        return equipaAapostar;
+    }
+
+    public double getValorAapostar() {
+        return valorAapostar;
+    }
 }

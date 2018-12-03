@@ -1,0 +1,1 @@
+[{"password":"abcd","pnome":"abcd","credito":200.0,"unome":"efgh","email":"abcd@gmail.com"}]
