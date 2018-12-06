@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="ESSBet/src"/>
+	<classpathentry kind="lib" path="ESSBet/jackson-annotations-2.9.7.jar"/>
+	<classpathentry kind="lib" path="ESSBet/jackson-core-2.9.7.jar"/>
+	<classpathentry kind="lib" path="ESSBet/jackson-databind-2.9.7.jar"/>
+	<classpathentry kind="lib" path="ESSBet/json-simple-1.1.1.jar"/>
+	<classpathentry kind="output" path="ESSBet/build/classes"/>
+</classpath>

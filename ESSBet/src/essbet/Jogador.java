@@ -60,7 +60,7 @@ public class Jogador {
     }
     
     public void retirarCredito(double moedas){
-        if (moedas > credito){
+        if (moedas < credito){
             credito-=moedas;
         }
     }

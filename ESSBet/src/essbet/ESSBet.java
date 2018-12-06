@@ -206,7 +206,7 @@ public class ESSBet {
     private static void menu(Jogador j){
     	String escolha = "";
         while(!escolha.equals("L")){
-        	System.out.println("Bem vindo, "+j.getPNome()+" "+j.getUNome()+"!\n"
+        	System.out.println("Bem vindo, ao menu principal!\n"
                     +"A - Verificar saldo da conta\n"
                     +"B - Ver apostas feitas\n"
                     +"C - Ver eventos ativos\n"
