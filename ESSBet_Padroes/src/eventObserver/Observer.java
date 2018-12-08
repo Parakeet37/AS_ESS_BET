@@ -1,24 +1,15 @@
 package eventObserver;
 
-public class Observer {
+public abstract class Observer {
 	
 	private String email;
     private String pNome;
     private String uNome;
-    private double credito;
-    
-    public Observer(String email, String pNome, String uNome, double credito) {
-    	this.email = email;
-        this.pNome = pNome;
-        this.uNome = uNome;
-        this.credito = credito;
-    }
     
     public Observer(String email, String pNome, String uNome){
         this.email = email;
         this.pNome = pNome;
         this.uNome = uNome;
-        this.credito = 100;
     }
 
     public String getEmail() {
@@ -43,19 +34,5 @@ public class Observer {
 
     public void setUNome(String uNome) {
         this.uNome = uNome;
-    }
-
-    public double getCredito() {
-        return credito;
-    }
-
-    public void adicionarCredito(double moedas){
-        credito+=moedas;
-    }
-    
-    public void retirarCredito(double moedas){
-        if (moedas <= credito){
-            credito-=moedas;
-        }
     }
 }

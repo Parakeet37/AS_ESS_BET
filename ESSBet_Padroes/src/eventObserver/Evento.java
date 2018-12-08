@@ -22,11 +22,12 @@ public class Evento {
 	private String equipaCasa;
 	private String equipaFora;
 	private int id;
+	private String idBookie;
 	private EventoState estado;
 	private ArrayList<Observer> observers;
 	private ArrayList<Aposta> apostas;
     
-	public Evento(int id, double homeOdd, double awayOdd, double oddEmpate, String equipaCasa, String equipaFora, EventoState state, int resultadoCasa, int resultadoFora, ArrayList<Observer> observers) {
+	public Evento(int id, String idBookie, double homeOdd, double awayOdd, double oddEmpate, String equipaCasa, String equipaFora, EventoState state, int resultadoCasa, int resultadoFora, ArrayList<Observer> observers) {
     	this.oddCasa = homeOdd;
     	this.oddFora = awayOdd;
     	this.equipaCasa = equipaCasa;
@@ -38,9 +39,10 @@ public class Evento {
         this.resultadoFora = resultadoFora;
         this.observers = observers;
         this.apostas = new ArrayList<>();
+        this.idBookie = idBookie;
     }
 	
-	public Evento(double homeOdd, double awayOdd, double oddEmpate, String equipaCasa, String equipaFora) {
+	public Evento(String idBookie, double homeOdd, double awayOdd, double oddEmpate, String equipaCasa, String equipaFora) {
     	this.oddCasa = homeOdd;
     	this.oddFora = awayOdd;
     	this.equipaCasa = equipaCasa;
@@ -51,6 +53,7 @@ public class Evento {
         this.resultadoFora = 0;
         this.observers = new ArrayList<>();
         this.apostas = new ArrayList<>();
+        this.idBookie = idBookie;
     }
 	
     public double getOddEmpate() {
@@ -94,23 +97,36 @@ public class Evento {
     }
 
 	public void notifyObservers() {
+		int count = 0;
+		int ganhos = 0;
 		for (Observer o: observers) {
 			for (Aposta a: apostas) {
 				if (a.getidApostador().equals(o.getEmail())) {
+					Jogador j = (Jogador) o;
 					if (resultadoCasa>resultadoFora && a.getEquipaAapostar()=='1') {
 						System.out.println("Parabéns, "+a.getidApostador()+", ganhou a aposta! Amealhou "+(a.getValorAapostar()*oddCasa)+" moedas.");
-						o.adicionarCredito(a.getValorAapostar()*oddCasa);
+						j.adicionarCredito(a.getValorAapostar()*oddCasa);
+						ganhos-=a.getValorAapostar()*oddCasa;
 					} else if (resultadoCasa<resultadoFora && a.getEquipaAapostar()=='2') {
 						System.out.println("Parabéns, "+a.getidApostador()+", ganhou a aposta! Amealhou "+(a.getValorAapostar()*oddFora)+" moedas.");
-						o.adicionarCredito(a.getValorAapostar()*oddFora);
+						j.adicionarCredito(a.getValorAapostar()*oddFora);
+						ganhos-=a.getValorAapostar()*oddFora;
 					} else if (resultadoCasa==resultadoFora && a.getEquipaAapostar()=='x'){
 						System.out.println("Parabéns, "+a.getidApostador()+", ganhou a aposta! Amealhou "+(a.getValorAapostar()*oddEmpate)+" moedas.");
-						o.adicionarCredito(a.getValorAapostar()*oddEmpate);
+						j.adicionarCredito(a.getValorAapostar()*oddEmpate);
+						ganhos-=a.getValorAapostar()*oddEmpate;
 					} else {
 						System.out.println("Perdeu a aposta, " + a.getidApostador() + ".");
+						ganhos+=a.getValorAapostar();
 					}
-				}
+					count++;
+				} 
 			}
+			if (idBookie.equals(o.getEmail())) {
+				System.out.println(o.getEmail()+", o evento " + this + " terminou!");
+				count++;
+			}
+			if (count == observers.size()) System.out.println("Este evento teve um saldo total de " + ganhos + " moedas, " + idBookie + "");
 		}
 	}
 
@@ -186,5 +202,13 @@ public class Evento {
 	public String toString() {
 		return "Evento " + id + ", " + equipaCasa + " - " + equipaFora + " ("+resultadoCasa + "-" + resultadoFora + ") - " 
 				+ estado;
+	}
+
+	public String getIdBookie() {
+		return idBookie;
+	}
+
+	public void setIdBookie(String idBookie) {
+		this.idBookie = idBookie;
 	}
 }

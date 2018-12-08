@@ -19,13 +19,36 @@ public class BetEss {
             escolha = escolha.toUpperCase();
             switch(escolha){
                 case "A": 
-                	if (facade.login()) 
+                	String res = facade.login();
+                	if (res.equals("J")) 
                 		menu(facade); 
+                	else if (res.equals("B"))
+                		menuBookie(facade);
                 	else 
                 		System.out.println("Credenciais inválidas"); break;
                 case "B": facade.signIn(); break;
                 case "C": loginAdmin(facade); break;
                 case "S": break;
+                default: System.out.println("Opção inválida!");
+            }
+        }
+	}
+
+	private static void menuBookie(Facade f) {
+		String escolha = "";
+        while(!escolha.equals("L")){
+        	System.out.println("Bem vindo à interface de bookie!\n"
+                    +"A - Criar evento\n"
+        			+"B - Receber notificaçõew sobre fecho de um evento\n"
+                    +"C - Mudar password\n"
+                    +"L - Logout\n");
+            escolha = f.lerString();
+            escolha = escolha.toUpperCase();
+            switch(escolha){
+                case "A": f.criarEvento(); break;
+                case "B": f.notificarEvento(); break;
+                case "C": f.mudarPassword(); break;
+                case "L": break;
                 default: System.out.println("Opção inválida!");
             }
         }
@@ -46,18 +69,18 @@ public class BetEss {
     	String escolha = "";
         while(!escolha.equals("L")){
         	System.out.println("Bem vindo à interface de administrador do sistema!\n"
-                    +"A - Criar evento\n"
-                    +"B - Fechar evento\n"
-                    +"C - Atualizar resultado de evento\n"
-                    +"D - Adicionar crédito a jogador\n"
+                    +"A - Fechar evento\n"
+                    +"B - Atualizar resultado de evento\n"
+                    +"C - Adicionar crédito a jogador\n"
+                    +"D - Registar bookie\n"
                     +"L - Logout\n");
             escolha = f.lerString();
             escolha = escolha.toUpperCase();
             switch(escolha){
-                case "A": f.criarEvento(); break;
-                case "B": f.fecharEvento(); break;
-                case "C": f.atualizarEvento(); break;
-                case "D": f.adicionarCredito(); break;
+                case "A": f.fecharEvento(); break;
+                case "B": f.atualizarEvento(); break;
+                case "C": f.adicionarCredito(); break;
+                case "D": f.registarBookie(); break;
                 case "L": break;
                 default: System.out.println("Opção inválida!");
             }
@@ -73,6 +96,7 @@ public class BetEss {
                     +"C - Ver eventos ativos\n"
                     +"D - Ver todos os eventos\n"
                     +"E - Fazer aposta\n"
+                    +"F - Alterar palavra-passe\n"
                     +"L - Logout\n");
             escolha = f.lerString();
             escolha = escolha.toUpperCase();
@@ -82,6 +106,7 @@ public class BetEss {
                 case "C": f.verEventosAtivos(); break;
                 case "D": f.verTodosOsEventos(); break;
                 case "E": f.fazerAposta(); break;
+                case "F": f.mudarPassword(); break;
                 case "L": break;
                 default: System.out.println("Opção inválida!");
             }
