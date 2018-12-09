@@ -38,7 +38,6 @@ public class Facade {
 	private HashMap<String, ArrayList<Aposta>> apostas;
 	private HashMap<String, Observer> observers;
 	private HashMap<Integer, Evento> eventos;
-	private String email;
 	
 	public Facade() {
 		apostas = new HashMap<>();
@@ -198,13 +197,9 @@ public class Facade {
 		}
 	}
 	
-	public String login() {
+	public String login(String email, String password) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
-		System.out.println("Insira o seu email:");
-		email = lerEmail();
-		System.out.println("Insira a sua palavra-passe(pode ser visualizada):");
-		String password = lerString();
 		MongoCollection<Document> col = db.getCollection("users");
 		if (col.countDocuments(new Document("email", email).append("password", password)) != 0)
 			if (observers.get(email) instanceof Jogador)
@@ -214,112 +209,59 @@ public class Facade {
 		return "";
 	}
 	
-	public void signIn() {
+	public void signIn(String email, String password, String pNome, String uNome) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
-		System.out.println("Insira o seu email:");
-		email = lerEmail();
-		while (observers.containsKey(email)) {
-			System.out.println("O email escolhido já é usado por outro utilizador!");
-			email=lerEmail();
-		}
-		System.out.println("Insira a sua palavra-passe(pode ser visualizada):");
-		String password = lerString();
-		while (password.length()<8) {
-			System.out.println("A palavra passe tem de ter pelo menos 8 caracteres!");
-			password= lerString();
-		}
-		System.out.println("Qual o seu primeiro nome?");
-		String pNome = lerString();
-		System.out.println("Qual o seu último nome?");
-		String uNome = lerString();
 		Jogador j = new Jogador(email, pNome, uNome);
 		observers.put(email, j);
 		addToDatabase(j, password);
 	}
 	
-	public void criarEvento() {
+	public void criarEvento(String email, double oddCasa, double oddFora, double oddEmpate, String equipaCasa, String equipaFora) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
-		System.out.println("Qual a equipa da casa?");
-		String equipaCasa = lerString();
-		System.out.println("Qual a equipa de fora?");
-		String equipaFora = lerString();
-		System.out.println("Qual a odd da equipa da casa?");
-		double oddCasa = lerDouble();
-		System.out.println("Qual a odd da equipa de fora?");
-		double oddFora = lerDouble();
-		System.out.println("Qual a odd do empate?");
-		double oddEmpate = lerDouble();
 		Evento e = new Evento(email, oddCasa, oddEmpate, oddFora, equipaCasa, equipaFora);
 		e.setId(eventos.size()+1);
 		eventos.put(e.getId(), e);
 		addToDatabase(e);
 	}
 	
-	public void fecharEvento() {
-		if (verEventosAtivos()) {
-			System.out.println("Escolha o evento");
-			int id = lerInt();
-			while(!estaAtivo(id)) {
-				System.out.println("O evento escolhido não está na lista!");
-				id = lerInt();
-			}
-			Evento e = eventos.get(id);
-			FechadoState state = new FechadoState();
-			state.changeState(e);
-			saveToDatabase(e);
-			ArrayList<String> obsArr=e.getObservers();
-			for (String idObserver: obsArr) {
-				if (observers.get(idObserver) instanceof Jogador) {
-					Jogador o = (Jogador) observers.get(idObserver);
-					saveToDatabase(o);
-				}
+	public void fecharEvento(int id) {
+		Evento e = eventos.get(id);
+		FechadoState state = new FechadoState();
+		state.changeState(e);
+		saveToDatabase(e);
+		ArrayList<String> obsArr=e.getObservers();
+		for (String idObserver: obsArr) {
+			if (observers.get(idObserver) instanceof Jogador) {
+				Jogador o = (Jogador) observers.get(idObserver);
+				saveToDatabase(o);
 			}
 		}
 	}
 	
-	private boolean estaAtivo(int id) {
+	public boolean estaAtivo(int id) {
 		return eventos.get(id).getEstado() instanceof AbertoState;
 	}
 
-	public void atualizarEvento() {
-		if (verEventosAtivos()) {
-			System.out.println("Escolha o evento");
-			int id = lerInt();
-			while(!estaAtivo(id)) {
-				System.out.println("O evento escolhido não está na lista!");
-				id = lerInt();
-			}
-			Evento e = eventos.get(id);
-			System.out.println("Que aconteceu?");
-			System.out.println("A - A equipa da casa marcou!");
-			System.out.println("B - A equipa de fora marcou!");
-			System.out.println("C - A equipa da casa teve um golo inválido!");
-			System.out.println("B - A equipa de fora teve um golo inválido!");
-			String escolha = "";
-			while(!escolha.equals("A") && !escolha.equals("B") && !escolha.equals("C")&& !escolha.equals("D")){
-	            escolha = lerString();
-	            escolha = escolha.toUpperCase();
-	            switch(escolha){
-	                case "A": e.goloCasa(); break;
-	                case "B": e.goloFora(); break;
-	                case "C": e.invalidadoCasa(); break;
-	                case "D": e.invalidadoFora(); break;
-	                default: System.out.println("Opção inválida!");
-	            }
-			}
-			saveToDatabase(e);
-		}
+	public void atualizarEvento(int id, String escolha) {
+		Evento e = eventos.get(id);
+        switch(escolha){
+            case "A": e.goloCasa(); break;
+            case "B": e.goloFora(); break;
+            case "C": e.invalidadoCasa(); break;
+            default: e.invalidadoFora(); break;
+        }
+		saveToDatabase(e);
 	}
 	
-	public void verificarSaldoConta() {
+	public double verificarSaldoConta(String email) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
-		System.out.println("Tem " + ((Jogador) observers.get(email)).getCredito() + " moedas disponíveis.");
+		return ((Jogador) observers.get(email)).getCredito();
 	}
 	
-	public void verApostasFeitas() {
+	public void verApostasFeitas(String email) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
 		if (apostas.get(email).size()==0) {
@@ -373,56 +315,18 @@ public class Facade {
 		return true;
 	}
 	
-	public void fazerAposta() {
-		if (((Jogador) observers.get(email)).getCredito()!=0) {
-			ArrayList<Integer> available = verEventosDisponiveis();
-			if (available.size()>0) {
-				System.out.println("Escolha o evento");
-				int id = lerInt();
-				Evento e = eventos.get(id);
-				while (!available.contains(id) || e==null) {
-					System.out.println("ID de evento inválido.");
-					id = lerInt();
-					e = eventos.get(id);
-				}
-				System.out.println("Em que equipa quer apostar?");
-				System.out.println("A - " + e.getEquipaCasa());
-				System.out.println("B - " + e.getEquipaFora());
-				System.out.println("C - Empate");
-				String escolha = "";
-				char equipa = 'a';
-				while(!escolha.equals("A") && !escolha.equals("B") && !escolha.equals("C")){
-		            escolha = lerString();
-		            escolha = escolha.toUpperCase();
-		            switch(escolha){
-		                case "A": equipa='1'; break;
-		                case "B": equipa='2'; break;
-		                case "C": equipa='x'; break;
-		                default: System.out.println("Opção inválida!");
-		            }
-				}
-				Jogador j = (Jogador) observers.get(email);
-				System.out.println("Qual o montante que quer apostar (Tem neste momento " + j.getCredito() + " fichas)?");
-				double aposta = lerDouble();
-				while (aposta>j.getCredito()) {
-					System.out.println("Não tem saldo suficiente para apostar esse montante.");
-					aposta = lerDouble();
-				}
-				j.retirarCredito(aposta);
-				Aposta a = new Aposta(email, e.getId(), equipa, aposta);
-				e.addObserver(j);
-				addToDatabase(a);
-				saveToDatabase(j);
-				saveToDatabase(e);
-			} else {
-				System.out.println("Não existem eventos disponíveis!");
-			}
-		} else {
-			System.out.println("Nao tem créditos suficientes para fazer uma aposta!");
-		}
+	public void fazerAposta(String email, int idEvento, char equipa, double aposta) {
+		Jogador j = (Jogador) observers.get(email);
+		j.retirarCredito(aposta);
+		Aposta a = new Aposta(email, idEvento, equipa, aposta);
+		Evento e = eventos.get(idEvento);
+		e.addObserver(j);
+		addToDatabase(a);
+		saveToDatabase(j);
+		saveToDatabase(e);
 	}
 	
-	private ArrayList<Integer> verEventosDisponiveis() {
+	public ArrayList<Integer> verEventosDisponiveis(String email) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
 		ArrayList<Evento> arrEventos = new ArrayList<>(eventos.values());
@@ -439,26 +343,19 @@ public class Facade {
 		return disponiveis;
 	}
 
-	public void adicionarCredito() {
-		int ind = 1;
+	public ArrayList<String> jogadores(){
 		ArrayList<String> arr = new ArrayList<>(observers.keySet());
 		ArrayList<String> jogadores = new ArrayList<>();
 		for (String s: arr) {
 			if (observers.get(s) instanceof Jogador) {
-				System.out.println(ind+"-"+s);
-				ind++;
 				jogadores.add(s);
 			} 
 		}
-		System.out.println("A que jogador quer adicionar credito?");
-		int i = lerInt();
-		while (i>ind) {
-			System.out.println("Índice errado!");
-			i = lerInt();
-		}
-		System.out.println("Quantas moedas quer adicionar?");
-		double qti = lerDouble();
-		Jogador j = (Jogador) observers.get(jogadores.get(i-1));
+		return jogadores;
+	}
+	
+	public void adicionarCredito(String email, double qti) {
+		Jogador j = (Jogador) observers.get(email);
 		j.adicionarCredito(qti);
 		saveToDatabase(j);
 	}
@@ -535,17 +432,10 @@ public class Facade {
 		return d;
 	}
 
-	public void notificarEvento() {
-		ArrayList<Integer> available = verEventosDisponiveis();
+	public void notificarEvento(int id, String email) {
+		ArrayList<Integer> available = verEventosDisponiveis(email);
 		if (available.size()>0) {
-			System.out.println("Escolha o evento");
-			int id = lerInt();
 			Evento e = eventos.get(id);
-			while (!available.contains(id) || e==null) {
-				System.out.println("ID de evento inválido.");
-				id = lerInt();
-				e = eventos.get(id);
-			}
 			e.addObserver(observers.get(email));
 			saveToDatabase(e);
 		} else {
@@ -554,45 +444,38 @@ public class Facade {
 		
 	}
 
-	public void registarBookie() {
+	public void registarBookie(String email, String pNome, String uNome) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
-		System.out.println("Insira o email do bookie:");
-		email = lerEmail();
-		while (observers.containsKey(email)) {
-			System.out.println("O email escolhido já é usado por outro utilizador!");
-			email=lerEmail();
-		}
-		String password = "default";
-		System.out.println("Qual o primeiro nome?");
-		String pNome = lerString();
-		System.out.println("Qual o último nome?");
-		String uNome = lerString();
 		Bookie j = new Bookie(email, pNome, uNome);
 		observers.put(email, j);
-		addToDatabase(j, password);
+		addToDatabase(j, "default");
 	}
 
-	public void mudarPassword() {
+	public void mudarPassword(String email, String password) {
 		client = DBConnection.getInstance().getConnection();
 		loadDatabase();
-		System.out.println("Insira a sua palavra-passe atual");
-		String passwordAtual = lerString();
-		MongoCollection<Document> col = db.getCollection("users");
-		while (col.countDocuments(new Document("email", email).append("password", passwordAtual)) == 0) {
-			System.out.println("Password incorreta!");
-			passwordAtual = lerString();
-		}
-		System.out.println("Insira a sua palavra-passe(pode ser visualizada):");
-		String password = lerString();
-		while (password.length()<8) {
-			System.out.println("A palavra passe tem de ter pelo menos 8 caracteres!");
-			password= lerString();
-		}
 		Observer o = observers.get(email);
 		if (o instanceof Bookie)
 			saveToDatabase((Bookie) o, password);
 		else
 			saveToDatabase((Jogador) o, password);
+	}
+
+	public boolean userExiste(String email) {
+		return observers.containsKey(email);
+	}
+
+	public boolean verificarPassword(String email, String password) {
+		MongoCollection<Document> col = db.getCollection("users");
+		return col.countDocuments(new Document("email", email).append("password", password)) != 0;
+	}
+
+	public String equipaCasa(int id) {
+		return eventos.get(id).getEquipaCasa();
+	}
+
+	public String equipaFora(int id) {
+		return eventos.get(id).getEquipaFora();
 	}
 }
